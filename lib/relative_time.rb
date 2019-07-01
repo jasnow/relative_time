@@ -1,4 +1,4 @@
-# typed: true
+# typed: strong
 require 'relative_time/in_words'
 require 'relative_time/version'
 

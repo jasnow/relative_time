@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/simplecov/all/simplecov.rbi
 #
-# simplecov-0.12.0
+# simplecov-0.13.0
 module SimpleCov
   def self.add_not_loaded_files(result); end
   def self.filtered(files); end
@@ -119,6 +119,7 @@ end
 class SimpleCov::Result
   def command_name; end
   def command_name=(arg0); end
+  def coverage; end
   def covered_lines(*args, &block); end
   def covered_percent(*args, &block); end
   def covered_percentages(*args, &block); end

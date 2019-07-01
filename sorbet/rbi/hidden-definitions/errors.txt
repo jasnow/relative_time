@@ -28,11 +28,7 @@
 # wrong constant name <RESERVED_114>
 # wrong constant name <RESERVED_115>
 # wrong constant name <RESERVED_116>
-# wrong constant name <RESERVED_117>
-# wrong constant name <RESERVED_118>
-# wrong constant name <RESERVED_119>
 # wrong constant name <RESERVED_11>
-# wrong constant name <RESERVED_120>
 # wrong constant name <RESERVED_12>
 # wrong constant name <RESERVED_13>
 # wrong constant name <RESERVED_14>
@@ -230,15 +226,11 @@
 # wrong constant name local_variable_get
 # wrong constant name local_variable_set
 # wrong constant name receiver
-# uninitialized constant Bundler::Definition::GENERICS
-# Did you mean?  Bundler::Definition::GENERICS
-# uninitialized constant Bundler::Definition::GENERIC_CACHE
-# Did you mean?  Bundler::Definition::GENERIC_CACHE
-# wrong constant name create_gem_version_promoter
 # wrong constant name <static-init>
 # wrong constant name environment
 # wrong constant name report
 # wrong constant name write
+# wrong constant name github_https?
 # wrong constant name <Class:AuthenticationRequiredError>
 # wrong constant name <Class:BadAuthenticationError>
 # wrong constant name <Class:Base>
@@ -374,6 +366,8 @@
 # wrong constant name locked_specs
 # wrong constant name major?
 # wrong constant name minor?
+# wrong constant name prerelease_specified
+# wrong constant name prerelease_specified=
 # wrong constant name sort_versions
 # wrong constant name strict
 # wrong constant name strict=
@@ -395,8 +389,10 @@
 # wrong constant name <static-init>
 # wrong constant name initialize
 # wrong constant name inject
+# wrong constant name remove
 # wrong constant name <static-init>
 # wrong constant name inject
+# wrong constant name remove
 # wrong constant name generate_bundler_executable_stubs
 # wrong constant name generate_standalone_bundler_executable_stubs
 # wrong constant name initialize
@@ -449,6 +445,8 @@
 # wrong constant name plugin
 # wrong constant name <static-init>
 # wrong constant name <static-init>
+# wrong constant name <static-init>
+# wrong constant name defined_event?
 # wrong constant name <Class:CommandConflict>
 # wrong constant name <Class:SourceConflict>
 # wrong constant name command_plugin
@@ -487,11 +485,6 @@
 # wrong constant name <static-init>
 # wrong constant name <static-init>
 # wrong constant name lock
-# uninitialized constant Bundler::Resolver::SpecGroup::GENERICS
-# Did you mean?  Bundler::Resolver::SpecGroup::GENERICS
-# uninitialized constant Bundler::Resolver::SpecGroup::GENERIC_CACHE
-# Did you mean?  Bundler::Resolver::SpecGroup::GENERIC_CACHE
-# wrong constant name platforms_for_dependency_named
 # wrong constant name attempt
 # wrong constant name attempts
 # wrong constant name current_run
@@ -507,6 +500,7 @@
 # wrong constant name default_retries
 # uninitialized constant Bundler::RubyGemsGemInstaller::ENV_PATHS
 # Did you mean?  Bundler::RubyGemsGemInstaller::ENV_PATHS
+# wrong constant name initialize
 # wrong constant name <static-init>
 # wrong constant name ==
 # wrong constant name fallback_timeout
@@ -769,7 +763,6 @@
 # wrong constant name detect$2
 # wrong constant name each_entry
 # wrong constant name each_with_index$2
-# wrong constant name each_with_object
 # wrong constant name entries$1
 # wrong constant name find$2
 # wrong constant name find_index$2
@@ -794,6 +787,14 @@
 # wrong constant name to_set
 # wrong constant name uniq
 # wrong constant name zip
+# undefined method `each$2' for class `Enumerator'
+# undefined method `initialize$1' for class `Enumerator'
+# Did you mean?  initialize
+# undefined method `with_index$2' for class `Enumerator'
+# wrong constant name each$2
+# wrong constant name each_with_index
+# wrong constant name initialize$1
+# wrong constant name with_index$2
 # wrong constant name each
 # wrong constant name initialize
 # wrong constant name chunk
@@ -964,6 +965,7 @@
 # wrong constant name full_message
 # wrong constant name initialize$1
 # wrong constant name exception
+# wrong constant name to_tty?
 # uninitialized constant Exception2MessageMapper
 # uninitialized constant Exception2MessageMapper
 # wrong constant name <static-init>
@@ -1185,8 +1187,10 @@
 # wrong constant name <Class:Source>
 # wrong constant name <Class:SourceList>
 # wrong constant name <Class:SpecFetcher>
+# wrong constant name <Class:SpecificationPolicy>
 # wrong constant name <Class:StreamUI>
 # wrong constant name <Class:Text>
+# wrong constant name <Class:UninstallError>
 # wrong constant name <Class:UriFormatter>
 # wrong constant name <Class:UserInteraction>
 # wrong constant name <Class:Util>
@@ -1259,7 +1263,6 @@
 # wrong constant name compatible?
 # wrong constant name filter!
 # wrong constant name missing_version_message
-# wrong constant name without_filtering
 # wrong constant name add_extra_args
 # wrong constant name add_option
 # wrong constant name arguments
@@ -1310,7 +1313,11 @@
 # wrong constant name backtrace=
 # wrong constant name bulk_threshold
 # wrong constant name bulk_threshold=
+# wrong constant name cert_expiration_length_days
+# wrong constant name cert_expiration_length_days=
 # wrong constant name check_credentials_permissions
+# wrong constant name concurrent_downloads
+# wrong constant name concurrent_downloads=
 # wrong constant name config_file_name
 # wrong constant name credentials_path
 # wrong constant name disable_default_gem_server
@@ -1386,7 +1393,8 @@
 # wrong constant name to_specs
 # wrong constant name to_yaml_properties
 # wrong constant name type
-# wrong constant name _deprecated_gems_to_install
+# wrong constant name _deprecated_add_found_dependencies
+# wrong constant name _deprecated_gather_dependencies
 # wrong constant name add_found_dependencies
 # wrong constant name available_set_for
 # wrong constant name consider_local?
@@ -1396,7 +1404,6 @@
 # wrong constant name find_gems_with_sources
 # wrong constant name find_spec_by_name_and_version
 # wrong constant name gather_dependencies
-# wrong constant name gems_to_install
 # wrong constant name in_background
 # wrong constant name initialize
 # wrong constant name install
@@ -1430,6 +1437,7 @@
 # wrong constant name skip
 # wrong constant name skip=
 # wrong constant name skip_during
+# wrong constant name _deprecated_source_exception
 # wrong constant name source_exception
 # wrong constant name source_exception=
 # wrong constant name <Class:BuildError>
@@ -1489,6 +1497,7 @@
 # wrong constant name dependency
 # wrong constant name initialize
 # wrong constant name request
+# wrong constant name _deprecated_extension_build_error
 # wrong constant name app_script_text
 # wrong constant name bin_dir
 # wrong constant name build_extensions
@@ -1528,7 +1537,7 @@
 # wrong constant name spec_file
 # wrong constant name unpack
 # wrong constant name verify_gem_home
-# wrong constant name verify_spec_name
+# wrong constant name verify_spec
 # wrong constant name windows_stub_script
 # wrong constant name write_build_info_file
 # wrong constant name write_cache_file
@@ -1602,15 +1611,24 @@
 # wrong constant name checksums
 # wrong constant name contents
 # wrong constant name copy_to
+# wrong constant name data_mode
+# wrong constant name data_mode=
 # wrong constant name digest
+# wrong constant name dir_mode
+# wrong constant name dir_mode=
 # wrong constant name extract_files
 # wrong constant name extract_tar_gz
+# wrong constant name file_mode
 # wrong constant name files
 # wrong constant name gzip_to
 # wrong constant name initialize
 # wrong constant name install_location
 # wrong constant name load_spec
+# wrong constant name mkdir_p_safe
+# wrong constant name normalize_path
 # wrong constant name open_tar_gz
+# wrong constant name prog_mode
+# wrong constant name prog_mode=
 # wrong constant name read_checksums
 # wrong constant name security_policy
 # wrong constant name security_policy=
@@ -1677,6 +1695,7 @@
 # wrong constant name version
 # wrong constant name <static-init>
 # wrong constant name from
+# wrong constant name strict_oct
 # wrong constant name <static-init>
 # uninitialized constant Gem::Package::TarReader::Elem
 # wrong constant name <Class:Entry>
@@ -1698,10 +1717,12 @@
 # wrong constant name getc
 # wrong constant name header
 # wrong constant name initialize
+# wrong constant name length
 # wrong constant name pos
 # wrong constant name read
 # wrong constant name readpartial
 # wrong constant name rewind
+# wrong constant name size
 # wrong constant name symlink?
 # wrong constant name <static-init>
 # wrong constant name <static-init>
@@ -1763,7 +1784,6 @@
 # wrong constant name platforms
 # wrong constant name version
 # wrong constant name wordy
-# wrong constant name api_endpoint
 # wrong constant name cache_update_path
 # wrong constant name close_all
 # wrong constant name correct_for_windows_path
@@ -1836,6 +1856,7 @@
 # wrong constant name install
 # wrong constant name install_dir
 # wrong constant name install_from_gemdeps
+# wrong constant name install_hooks
 # wrong constant name install_into
 # wrong constant name load_gemdeps
 # wrong constant name prerelease
@@ -1937,6 +1958,7 @@
 # wrong constant name ==
 # wrong constant name ===
 # wrong constant name =~
+# wrong constant name _tilde_requirements
 # wrong constant name as_list
 # wrong constant name concat
 # wrong constant name encode_with
@@ -2381,6 +2403,7 @@
 # wrong constant name initialize
 # wrong constant name <static-init>
 # wrong constant name dependencies
+# wrong constant name download
 # wrong constant name fetch_development_dependencies
 # wrong constant name full_name
 # wrong constant name install
@@ -2456,9 +2479,11 @@
 # wrong constant name key
 # wrong constant name key=
 # wrong constant name load_cert_chain
+# wrong constant name options
 # wrong constant name re_sign_key
 # wrong constant name sign
 # wrong constant name <static-init>
+# wrong constant name re_sign_cert
 # wrong constant name cert_path
 # wrong constant name dir
 # wrong constant name each_certificate
@@ -2492,7 +2517,6 @@
 # wrong constant name <Class:Lock>
 # wrong constant name <Class:SpecificFile>
 # wrong constant name <Class:Vendor>
-# wrong constant name api_uri
 # wrong constant name cache_dir
 # wrong constant name dependency_resolver_set
 # wrong constant name download
@@ -2612,6 +2636,11 @@
 # Did you mean?  Gem::Specification::GENERICS
 # uninitialized constant Gem::Specification::GENERIC_CACHE
 # Did you mean?  Gem::Specification::GENERIC_CACHE
+# wrong constant name _deprecated_default_executable
+# wrong constant name _deprecated_default_executable=
+# wrong constant name _deprecated_has_rdoc
+# wrong constant name _deprecated_has_rdoc=
+# wrong constant name _deprecated_has_rdoc?
 # wrong constant name _dump
 # wrong constant name abbreviate
 # wrong constant name activate
@@ -2637,7 +2666,6 @@
 # wrong constant name build_extensions
 # wrong constant name build_info_dir
 # wrong constant name build_info_file
-# wrong constant name bundled_gem_in_old_ruby?
 # wrong constant name cache_dir
 # wrong constant name cache_file
 # wrong constant name cert_chain
@@ -2686,6 +2714,7 @@
 # wrong constant name initialize
 # wrong constant name installed_by_version
 # wrong constant name installed_by_version=
+# wrong constant name keep_only_files_and_directories
 # wrong constant name lib_files
 # wrong constant name license
 # wrong constant name license=
@@ -2731,7 +2760,6 @@
 # wrong constant name rg_full_gem_path
 # wrong constant name rg_loaded_from
 # wrong constant name ri_dir
-# wrong constant name rubyforge_project
 # wrong constant name rubyforge_project=
 # wrong constant name rubygems_version
 # wrong constant name rubygems_version=
@@ -2765,7 +2793,6 @@
 # wrong constant name validate_metadata
 # wrong constant name validate_permissions
 # wrong constant name version=
-# wrong constant name warning
 # wrong constant name yaml_initialize
 # uninitialized constant Gem::Specification::Elem
 # wrong constant name _all
@@ -2808,6 +2835,15 @@
 # wrong constant name stubs
 # wrong constant name stubs_for
 # wrong constant name unresolved_deps
+# wrong constant name initialize
+# wrong constant name packaging
+# wrong constant name packaging=
+# wrong constant name validate
+# wrong constant name validate_dependencies
+# wrong constant name validate_metadata
+# wrong constant name validate_permissions
+# wrong constant name <static-init>
+# wrong constant name _deprecated_debug
 # wrong constant name _gets_noecho
 # wrong constant name alert
 # wrong constant name alert_error
@@ -2853,6 +2889,9 @@
 # wrong constant name min3
 # wrong constant name truncate_text
 # wrong constant name <static-init>
+# wrong constant name spec
+# wrong constant name spec=
+# wrong constant name <static-init>
 # wrong constant name dependency
 # wrong constant name errors
 # wrong constant name errors=
@@ -2877,6 +2916,7 @@
 # wrong constant name verbose
 # wrong constant name <static-init>
 # wrong constant name <static-init>
+# wrong constant name glob_files_in_dir
 # wrong constant name gunzip
 # wrong constant name gzip
 # wrong constant name inflate
@@ -2906,11 +2946,12 @@
 # wrong constant name create
 # wrong constant name new
 # undefined singleton method `bin_path$1' for `Gem'
-# undefined singleton method `datadir$1' for `Gem'
-# wrong constant name _deprecated_datadir
+# wrong constant name _deprecated_detect_gemdeps
+# wrong constant name _deprecated_gunzip
+# wrong constant name _deprecated_gzip
+# wrong constant name _deprecated_inflate
 # wrong constant name activate_bin_path
 # wrong constant name bin_path$1
-# wrong constant name datadir$1
 # wrong constant name default_ext_dir_for
 # wrong constant name default_gems_use_full_paths?
 # wrong constant name default_spec_cache_dir
@@ -2949,6 +2990,7 @@
 # wrong constant name location_of_caller
 # wrong constant name marshal_version
 # wrong constant name needs
+# wrong constant name operating_system_defaults
 # wrong constant name path
 # wrong constant name path_separator
 # wrong constant name paths
@@ -3513,7 +3555,6 @@
 #                singleton_method
 # undefined method `to_enum$2' for module `Kernel'
 # Did you mean?  to_enum
-# wrong constant name class
 # wrong constant name clone$1
 # wrong constant name define_singleton_method$2
 # wrong constant name display$1
@@ -3565,6 +3606,9 @@
 # wrong constant name source_location
 # wrong constant name super_method
 # wrong constant name unbind
+# wrong constant name <Class:Spec>
+# wrong constant name <Class:Test>
+# wrong constant name <Class:DSL>
 # uninitialized constant Minitest::Spec::E
 # Did you mean?  Minitest::Spec::E
 # uninitialized constant Minitest::Spec::PASSTHROUGH_EXCEPTIONS
@@ -4243,8 +4287,8 @@
 # uninitialized constant Socket::CREAT
 # Did you mean?  Socket::CREAT
 # uninitialized constant Socket::DSYNC
-# Did you mean?  Socket::SYNC
-#                Socket::DSYNC
+# Did you mean?  Socket::DSYNC
+#                Socket::SYNC
 # uninitialized constant Socket::EXCL
 # Did you mean?  Socket::EXCL
 # uninitialized constant Socket::FNM_CASEFOLD
@@ -4308,8 +4352,8 @@
 # uninitialized constant Socket::SHARE_DELETE
 # Did you mean?  Socket::SHARE_DELETE
 # uninitialized constant Socket::SYNC
-# Did you mean?  Socket::SYNC
-#                Socket::DSYNC
+# Did you mean?  Socket::DSYNC
+#                Socket::SYNC
 # uninitialized constant Socket::TRUNC
 # Did you mean?  Socket::TRUNC
 #                TRUE

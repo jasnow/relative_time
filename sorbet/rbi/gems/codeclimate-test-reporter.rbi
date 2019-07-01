@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/codeclimate-test-reporter/all/codeclimate-test-reporter.rbi
 #
-# codeclimate-test-reporter-1.0.5
+# codeclimate-test-reporter-1.0.9
 module CodeClimate
 end
 module CodeClimate::TestReporter
@@ -114,7 +114,9 @@ class CodeClimate::TestReporter::Git
   def self.configured_git_dir; end
   def self.git(command); end
   def self.git_dir; end
-  def self.head; end
+  def self.head_from_ci; end
+  def self.head_from_git; end
+  def self.head_from_git_or_ci; end
   def self.info; end
   def self.rails_git_dir_present?; end
 end

@@ -104,10 +104,6 @@ module Bundler::BuildMetadata
   extend ::T::Sig
 end
 
-class Bundler::Definition
-  def create_gem_version_promoter(); end
-end
-
 Bundler::Deprecate = Gem::Deprecate
 
 class Bundler::Env
@@ -119,6 +115,10 @@ class Bundler::Env
   def self.report(options=T.unsafe(nil)); end
 
   def self.write(io); end
+end
+
+class Bundler::FeatureFlag
+  def github_https?(); end
 end
 
 class Bundler::Fetcher
@@ -237,13 +237,13 @@ end
 class Bundler::Fetcher::Downloader
   def connection(); end
 
-  def fetch(uri, options=T.unsafe(nil), counter=T.unsafe(nil)); end
+  def fetch(uri, headers=T.unsafe(nil), counter=T.unsafe(nil)); end
 
   def initialize(connection, redirect_limit); end
 
   def redirect_limit(); end
 
-  def request(uri, options); end
+  def request(uri, headers); end
 end
 
 class Bundler::Fetcher::Downloader
@@ -408,6 +408,10 @@ class Bundler::GemVersionPromoter
 
   def minor?(); end
 
+  def prerelease_specified(); end
+
+  def prerelease_specified=(prerelease_specified); end
+
   def sort_versions(dep, spec_groups); end
 
   def strict(); end
@@ -415,6 +419,7 @@ class Bundler::GemVersionPromoter
   def strict=(strict); end
 
   def unlock_gems(); end
+  DEBUG = ::T.let(nil, ::T.untyped)
 end
 
 class Bundler::GemVersionPromoter
@@ -454,13 +459,18 @@ class Bundler::Graph
 end
 
 class Bundler::Injector
-  def initialize(new_deps, options=T.unsafe(nil)); end
+  def initialize(deps, options=T.unsafe(nil)); end
 
   def inject(gemfile_path, lockfile_path); end
+
+  def remove(gemfile_path, lockfile_path); end
+  INJECTED_GEMS = ::T.let(nil, ::T.untyped)
 end
 
 class Bundler::Injector
   def self.inject(new_deps, options=T.unsafe(nil)); end
+
+  def self.remove(gems, options=T.unsafe(nil)); end
 end
 
 class Bundler::Installer
@@ -602,6 +612,18 @@ end
 class Bundler::Plugin::DSL
 end
 
+module Bundler::Plugin::Events
+  GEM_AFTER_INSTALL = ::T.let(nil, ::T.untyped)
+  GEM_AFTER_INSTALL_ALL = ::T.let(nil, ::T.untyped)
+  GEM_BEFORE_INSTALL = ::T.let(nil, ::T.untyped)
+  GEM_BEFORE_INSTALL_ALL = ::T.let(nil, ::T.untyped)
+end
+
+module Bundler::Plugin::Events
+  extend ::T::Sig
+  def self.defined_event?(event); end
+end
+
 class Bundler::Plugin::Index
   def command_plugin(command); end
 
@@ -684,10 +706,6 @@ class Bundler::ProcessLock
   def self.lock(bundle_path=T.unsafe(nil)); end
 end
 
-class Bundler::Resolver::SpecGroup
-  def platforms_for_dependency_named(dependency); end
-end
-
 class Bundler::Retry
   def attempt(&block); end
 
@@ -721,6 +739,7 @@ module Bundler::RubyDsl
 end
 
 class Bundler::RubyGemsGemInstaller
+  def initialize(gem, options=T.unsafe(nil)); end
 end
 
 class Bundler::RubyGemsGemInstaller
@@ -749,7 +768,7 @@ class Bundler::Settings::Mirror
 end
 
 class Bundler::Settings::Mirrors
-  def each(); end
+  def each(&blk); end
 
   def for(uri); end
 
@@ -1150,7 +1169,6 @@ class Delegator
   def protected_methods(all=T.unsafe(nil)); end
 
   def public_methods(all=T.unsafe(nil)); end
-  RUBYGEMS_ACTIVATION_MONITOR = ::T.let(nil, ::T.untyped)
 end
 
 class Delegator
@@ -1510,8 +1528,6 @@ module Enumerable
 
   def each_entry(*_); end
 
-  def each_with_object(_); end
-
   def grep_v(_); end
 
   def lazy(); end
@@ -1535,8 +1551,13 @@ module Enumerable
   extend ::T::Sig
 end
 
+class Enumerator
+  def each_with_index(); end
+
+end
+
 class Enumerator::Generator
-  def each(*_); end
+  def each(*_, &blk); end
 
   def initialize(*_); end
 end
@@ -2033,7 +2054,7 @@ class Etc::Group
   extend ::Enumerable
   def self.[](*_); end
 
-  def self.each(); end
+  def self.each(&blk); end
 
   def self.members(); end
 end
@@ -2085,7 +2106,7 @@ class Etc::Passwd
   extend ::Enumerable
   def self.[](*_); end
 
-  def self.each(); end
+  def self.each(&blk); end
 
   def self.members(); end
 end
@@ -2132,13 +2153,15 @@ module Etc
 end
 
 class Exception
-  def full_message(); end
+  def full_message(*_); end
 
 end
 
 class Exception
   extend ::T::Sig
   def self.exception(*_); end
+
+  def self.to_tty?(); end
 end
 
 class ExitCalledError
@@ -2554,7 +2577,7 @@ class Gem::AvailableSet
 
   def all_specs(); end
 
-  def each(); end
+  def each(&blk); end
 
   def each_spec(); end
 
@@ -2691,13 +2714,12 @@ module Gem::BundlerVersionFinder
   def self.filter!(specs); end
 
   def self.missing_version_message(); end
-
-  def self.without_filtering(); end
 end
 
 class Gem::Command
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
   def add_extra_args(args); end
 
   def add_option(*opts, &handler); end
@@ -2748,7 +2770,7 @@ class Gem::Command
 
   def show_help(); end
 
-  def show_lookup_failure(gem_name, version, errors, domain); end
+  def show_lookup_failure(gem_name, version, errors, domain, required_by=T.unsafe(nil)); end
 
   def summary(); end
 
@@ -2794,6 +2816,7 @@ end
 class Gem::ConfigFile
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
   def ==(other); end
 
   def [](key); end
@@ -2812,7 +2835,15 @@ class Gem::ConfigFile
 
   def bulk_threshold=(bulk_threshold); end
 
+  def cert_expiration_length_days(); end
+
+  def cert_expiration_length_days=(cert_expiration_length_days); end
+
   def check_credentials_permissions(); end
+
+  def concurrent_downloads(); end
+
+  def concurrent_downloads=(concurrent_downloads); end
 
   def config_file_name(); end
 
@@ -2875,6 +2906,8 @@ class Gem::ConfigFile
   def write(); end
   DEFAULT_BACKTRACE = ::T.let(nil, ::T.untyped)
   DEFAULT_BULK_THRESHOLD = ::T.let(nil, ::T.untyped)
+  DEFAULT_CERT_EXPIRATION_LENGTH_DAYS = ::T.let(nil, ::T.untyped)
+  DEFAULT_CONCURRENT_DOWNLOADS = ::T.let(nil, ::T.untyped)
   DEFAULT_UPDATE_SOURCES = ::T.let(nil, ::T.untyped)
   DEFAULT_VERBOSITY = ::T.let(nil, ::T.untyped)
   OPERATING_SYSTEM_DEFAULTS = ::T.let(nil, ::T.untyped)
@@ -2906,6 +2939,7 @@ class Gem::ConsoleUI
 end
 
 module Gem::DefaultUserInteraction
+  include ::Gem::Text
   def ui(); end
 
   def ui=(new_ui); end
@@ -2997,9 +3031,12 @@ end
 class Gem::DependencyInstaller
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
-  def _deprecated_gems_to_install(); end
+  include ::Gem::Text
+  def _deprecated_add_found_dependencies(to_do, dependency_list); end
 
-  def add_found_dependencies(to_do, dependency_list); end
+  def _deprecated_gather_dependencies(); end
+
+  def add_found_dependencies(*args, &block); end
 
   def available_set_for(dep_or_name, version); end
 
@@ -3015,9 +3052,7 @@ class Gem::DependencyInstaller
 
   def find_spec_by_name_and_version(gem_name, version=T.unsafe(nil), prerelease=T.unsafe(nil)); end
 
-  def gather_dependencies(); end
-
-  def gems_to_install(*args, &block); end
+  def gather_dependencies(*args, &block); end
 
   def in_background(what); end
 
@@ -3093,8 +3128,6 @@ class Gem::DependencyResolutionError
   extend ::T::Sig
 end
 
-Gem::DependencyResolver = Gem::Resolver
-
 module Gem::Deprecate
   extend ::T::Sig
   def self.deprecate(name, repl, year, month); end
@@ -3119,13 +3152,16 @@ class Gem::ErrorReason
 end
 
 class Gem::Exception
-  def source_exception(); end
+  def _deprecated_source_exception(); end
+
+  def source_exception(*args, &block); end
 
   def source_exception=(source_exception); end
 end
 
 class Gem::Exception
   extend ::T::Sig
+  extend ::Gem::Deprecate
 end
 
 module Gem::Ext
@@ -3140,6 +3176,7 @@ end
 class Gem::Ext::Builder
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
   def build_args(); end
 
   def build_args=(build_args); end
@@ -3173,14 +3210,14 @@ class Gem::Ext::CmakeBuilder
 end
 
 class Gem::Ext::CmakeBuilder
-  def self.build(extension, directory, dest_path, results, args=T.unsafe(nil), lib_dir=T.unsafe(nil)); end
+  def self.build(extension, dest_path, results, args=T.unsafe(nil), lib_dir=T.unsafe(nil)); end
 end
 
 class Gem::Ext::ConfigureBuilder
 end
 
 class Gem::Ext::ConfigureBuilder
-  def self.build(extension, directory, dest_path, results, args=T.unsafe(nil), lib_dir=T.unsafe(nil)); end
+  def self.build(extension, dest_path, results, args=T.unsafe(nil), lib_dir=T.unsafe(nil)); end
 end
 
 class Gem::Ext::ExtConfBuilder
@@ -3189,7 +3226,7 @@ end
 Gem::Ext::ExtConfBuilder::FileEntry = FileUtils::Entry_
 
 class Gem::Ext::ExtConfBuilder
-  def self.build(extension, directory, dest_path, results, args=T.unsafe(nil), lib_dir=T.unsafe(nil)); end
+  def self.build(extension, dest_path, results, args=T.unsafe(nil), lib_dir=T.unsafe(nil)); end
 
   def self.get_relative_path(path); end
 end
@@ -3198,7 +3235,7 @@ class Gem::Ext::RakeBuilder
 end
 
 class Gem::Ext::RakeBuilder
-  def self.build(extension, directory, dest_path, results, args=T.unsafe(nil), lib_dir=T.unsafe(nil)); end
+  def self.build(extension, dest_path, results, args=T.unsafe(nil), lib_dir=T.unsafe(nil)); end
 end
 
 module Gem::Ext
@@ -3262,6 +3299,9 @@ end
 class Gem::Installer
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
+  def _deprecated_extension_build_error(build_dir, output, backtrace=T.unsafe(nil)); end
+
   def app_script_text(bin_file_name); end
 
   def bin_dir(); end
@@ -3288,7 +3328,7 @@ class Gem::Installer
 
   def ensure_required_rubygems_version_met(); end
 
-  def extension_build_error(build_dir, output, backtrace=T.unsafe(nil)); end
+  def extension_build_error(*args, &block); end
 
   def extract_bin(); end
 
@@ -3340,7 +3380,7 @@ class Gem::Installer
 
   def verify_gem_home(unpack=T.unsafe(nil)); end
 
-  def verify_spec_name(); end
+  def verify_spec(); end
 
   def windows_stub_script(bindir, bin_file_name); end
 
@@ -3355,6 +3395,7 @@ class Gem::Installer
 end
 
 class Gem::Installer
+  extend ::Gem::Deprecate
   def self.at(path, options=T.unsafe(nil)); end
 
   def self.exec_format(); end
@@ -3375,7 +3416,8 @@ class Gem::InvalidSpecificationException
 end
 
 class Gem::Licenses
-  IDENTIFIERS = ::T.let(nil, ::T.untyped)
+  EXCEPTION_IDENTIFIERS = ::T.let(nil, ::T.untyped)
+  LICENSE_IDENTIFIERS = ::T.let(nil, ::T.untyped)
   NONSTANDARD = ::T.let(nil, ::T.untyped)
   REGEXP = ::T.let(nil, ::T.untyped)
 end
@@ -3388,7 +3430,7 @@ class Gem::Licenses
 end
 
 class Gem::List
-  def each(); end
+  def each(&blk); end
 
   def initialize(value=T.unsafe(nil), tail=T.unsafe(nil)); end
 
@@ -3484,6 +3526,7 @@ end
 class Gem::Package
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
   def add_checksums(tar); end
 
   def add_contents(tar); end
@@ -3492,7 +3535,7 @@ class Gem::Package
 
   def add_metadata(tar); end
 
-  def build(skip_validation=T.unsafe(nil)); end
+  def build(skip_validation=T.unsafe(nil), strict_validation=T.unsafe(nil)); end
 
   def build_time(); end
 
@@ -3504,11 +3547,21 @@ class Gem::Package
 
   def copy_to(path); end
 
+  def data_mode(); end
+
+  def data_mode=(data_mode); end
+
   def digest(entry); end
+
+  def dir_mode(); end
+
+  def dir_mode=(dir_mode); end
 
   def extract_files(destination_dir, pattern=T.unsafe(nil)); end
 
   def extract_tar_gz(io, destination_dir, pattern=T.unsafe(nil)); end
+
+  def file_mode(mode); end
 
   def files(); end
 
@@ -3520,7 +3573,15 @@ class Gem::Package
 
   def load_spec(entry); end
 
+  def mkdir_p_safe(mkdir, mkdir_options, destination_dir, file_name); end
+
+  def normalize_path(pathname); end
+
   def open_tar_gz(io); end
+
+  def prog_mode(); end
+
+  def prog_mode=(prog_mode); end
 
   def read_checksums(gem); end
 
@@ -3528,7 +3589,7 @@ class Gem::Package
 
   def security_policy=(security_policy); end
 
-  def setup_signer(); end
+  def setup_signer(signer_options: T.unsafe(nil)); end
 
   def spec(); end
 
@@ -3680,6 +3741,7 @@ class Gem::Package::TarHeader
   def update_checksum(); end
 
   def version(); end
+  EMPTY_HEADER = ::T.let(nil, ::T.untyped)
   FIELDS = ::T.let(nil, ::T.untyped)
   PACK_FORMAT = ::T.let(nil, ::T.untyped)
   UNPACK_FORMAT = ::T.let(nil, ::T.untyped)
@@ -3687,6 +3749,8 @@ end
 
 class Gem::Package::TarHeader
   def self.from(stream); end
+
+  def self.strict_oct(str); end
 end
 
 class Gem::Package::TarInvalidError
@@ -3699,7 +3763,7 @@ class Gem::Package::TarReader
   include ::Enumerable
   def close(); end
 
-  def each(); end
+  def each(&blk); end
 
   def each_entry(); end
 
@@ -3733,13 +3797,17 @@ class Gem::Package::TarReader::Entry
 
   def initialize(header, io); end
 
+  def length(); end
+
   def pos(); end
 
   def read(len=T.unsafe(nil)); end
 
-  def readpartial(len=T.unsafe(nil)); end
+  def readpartial(maxlen=T.unsafe(nil), outbuf=T.unsafe(nil)); end
 
   def rewind(); end
+
+  def size(); end
 
   def symlink?(); end
 end
@@ -3822,7 +3890,7 @@ class Gem::Package::TooLongFileName
 end
 
 class Gem::Package
-  def self.build(spec, skip_validation=T.unsafe(nil)); end
+  def self.build(spec, skip_validation=T.unsafe(nil), strict_validation=T.unsafe(nil), file_name=T.unsafe(nil)); end
 
   def self.new(gem, security_policy=T.unsafe(nil)); end
 end
@@ -3908,8 +3976,7 @@ end
 class Gem::RemoteFetcher
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
-  def api_endpoint(uri); end
-
+  include ::Gem::Text
   def cache_update_path(uri, path=T.unsafe(nil), update=T.unsafe(nil)); end
 
   def close_all(); end
@@ -3967,6 +4034,7 @@ end
 class Gem::Request
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
   def cert_files(); end
 
   def connection_for(uri); end
@@ -4024,6 +4092,7 @@ end
 class Gem::Request
   extend ::Gem::UserInteraction
   extend ::Gem::DefaultUserInteraction
+  extend ::Gem::Text
   def self.configure_connection_for_https(connection, cert_files); end
 
   def self.create_with_proxy(uri, request_class, last_modified, proxy); end
@@ -4075,6 +4144,8 @@ class Gem::RequestSet
 
   def install_from_gemdeps(options, &block); end
 
+  def install_hooks(requests, options); end
+
   def install_into(dir, force=T.unsafe(nil), options=T.unsafe(nil)); end
 
   def load_gemdeps(path, without_groups=T.unsafe(nil), installing=T.unsafe(nil)); end
@@ -4113,8 +4184,6 @@ class Gem::RequestSet
 
   def vendor_set(); end
 end
-
-Gem::RequestSet::GemDepedencyAPI = Gem::RequestSet::GemDependencyAPI
 
 class Gem::RequestSet::GemDependencyAPI
   def dependencies(); end
@@ -4291,6 +4360,8 @@ class Gem::Requirement
   def ===(version); end
 
   def =~(version); end
+
+  def _tilde_requirements(); end
 
   def as_list(); end
 
@@ -4755,7 +4826,7 @@ class Gem::Resolver::Molinillo::DependencyGraph
 
   def detach_vertex_named(name); end
 
-  def each(); end
+  def each(&blk); end
 
   def log(); end
 
@@ -4875,7 +4946,7 @@ class Gem::Resolver::Molinillo::DependencyGraph::Log
 
   def detach_vertex_named(graph, name); end
 
-  def each(); end
+  def each(&blk); end
 
   def pop!(graph); end
 
@@ -5180,7 +5251,7 @@ class Gem::Resolver::RequirementList
   include ::Enumerable
   def add(req); end
 
-  def each(); end
+  def each(&blk); end
 
   def empty?(); end
 
@@ -5233,6 +5304,8 @@ end
 
 class Gem::Resolver::Specification
   def dependencies(); end
+
+  def download(options); end
 
   def fetch_development_dependencies(); end
 
@@ -5354,6 +5427,7 @@ Gem::Security::KEY_ALGORITHM = OpenSSL::PKey::RSA
 class Gem::Security::Policy
   include ::Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
   def check_cert(signer, issuer, time); end
 
   def check_chain(chain, time); end
@@ -5405,6 +5479,9 @@ class Gem::Security::Policy
 end
 
 class Gem::Security::Signer
+  include ::Gem::UserInteraction
+  include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
   def cert_chain(); end
 
   def cert_chain=(cert_chain); end
@@ -5415,7 +5492,7 @@ class Gem::Security::Signer
 
   def extract_name(cert); end
 
-  def initialize(key, cert_chain, passphrase=T.unsafe(nil)); end
+  def initialize(key, cert_chain, passphrase=T.unsafe(nil), options=T.unsafe(nil)); end
 
   def key(); end
 
@@ -5423,12 +5500,16 @@ class Gem::Security::Signer
 
   def load_cert_chain(); end
 
-  def re_sign_key(); end
+  def options(); end
+
+  def re_sign_key(expiration_length: T.unsafe(nil)); end
 
   def sign(data); end
+  DEFAULT_OPTIONS = ::T.let(nil, ::T.untyped)
 end
 
 class Gem::Security::Signer
+  def self.re_sign_cert(expired_cert, expired_cert_path, private_key); end
 end
 
 class Gem::Security::TrustDir
@@ -5492,8 +5573,6 @@ end
 class Gem::Source
   include ::Comparable
   def ==(other); end
-
-  def api_uri(); end
 
   def cache_dir(uri); end
 
@@ -5642,7 +5721,7 @@ class Gem::SourceList
 
   def delete(source); end
 
-  def each(); end
+  def each(&blk); end
 
   def each_source(&b); end
 
@@ -5717,6 +5796,16 @@ class Gem::Specification
   include ::Bundler::GemHelpers
   def ==(other); end
 
+  def _deprecated_default_executable(); end
+
+  def _deprecated_default_executable=(_deprecated_default_executable); end
+
+  def _deprecated_has_rdoc(); end
+
+  def _deprecated_has_rdoc=(ignored); end
+
+  def _deprecated_has_rdoc?(*args, &block); end
+
   def _dump(limit); end
 
   def abbreviate(); end
@@ -5767,8 +5856,6 @@ class Gem::Specification
 
   def build_info_file(); end
 
-  def bundled_gem_in_old_ruby?(); end
-
   def cache_dir(); end
 
   def cache_file(); end
@@ -5785,9 +5872,9 @@ class Gem::Specification
 
   def date=(date); end
 
-  def default_executable(); end
+  def default_executable(*args, &block); end
 
-  def default_executable=(default_executable); end
+  def default_executable=(*args, &block); end
 
   def default_value(name); end
 
@@ -5843,11 +5930,11 @@ class Gem::Specification
 
   def has_conflicts?(); end
 
-  def has_rdoc(); end
+  def has_rdoc(*args, &block); end
 
-  def has_rdoc=(ignored); end
+  def has_rdoc=(*args, &block); end
 
-  def has_rdoc?(); end
+  def has_rdoc?(*args, &block); end
 
   def has_test_suite?(); end
 
@@ -5864,6 +5951,8 @@ class Gem::Specification
   def installed_by_version(); end
 
   def installed_by_version=(version); end
+
+  def keep_only_files_and_directories(); end
 
   def lib_files(); end
 
@@ -5955,8 +6044,6 @@ class Gem::Specification
 
   def ri_dir(); end
 
-  def rubyforge_project(); end
-
   def rubyforge_project=(rubyforge_project); end
 
   def rubygems_version(); end
@@ -6013,7 +6100,7 @@ class Gem::Specification
 
   def traverse(trail=T.unsafe(nil), visited=T.unsafe(nil), &block); end
 
-  def validate(packaging=T.unsafe(nil)); end
+  def validate(packaging=T.unsafe(nil), strict=T.unsafe(nil)); end
 
   def validate_dependencies(); end
 
@@ -6023,8 +6110,6 @@ class Gem::Specification
 
   def version=(version); end
 
-  def warning(statement); end
-
   def yaml_initialize(tag, vals); end
   DateLike = ::T.let(nil, ::T.untyped)
   DateTimeFormat = ::T.let(nil, ::T.untyped)
@@ -6033,8 +6118,8 @@ end
 
 class Gem::Specification
   extend ::T::Sig
-  extend ::Gem::Deprecate
   extend ::Enumerable
+  extend ::Gem::Deprecate
   def self._all(); end
 
   def self._clear_load_cache(); end
@@ -6063,7 +6148,7 @@ class Gem::Specification
 
   def self.dirs=(dirs); end
 
-  def self.each(); end
+  def self.each(&blk); end
 
   def self.each_gemspec(dirs); end
 
@@ -6116,7 +6201,35 @@ class Gem::Specification
   def self.unresolved_deps(); end
 end
 
+class Gem::SpecificationPolicy
+  def initialize(specification); end
+
+  def packaging(); end
+
+  def packaging=(packaging); end
+
+  def validate(strict=T.unsafe(nil)); end
+
+  def validate_dependencies(); end
+
+  def validate_metadata(); end
+
+  def validate_permissions(); end
+  HOMEPAGE_URI_PATTERN = ::T.let(nil, ::T.untyped)
+  LAZY = ::T.let(nil, ::T.untyped)
+  LAZY_PATTERN = ::T.let(nil, ::T.untyped)
+  METADATA_LINK_KEYS = ::T.let(nil, ::T.untyped)
+  SPECIAL_CHARACTERS = ::T.let(nil, ::T.untyped)
+  VALID_NAME_PATTERN = ::T.let(nil, ::T.untyped)
+  VALID_URI_PATTERN = ::T.let(nil, ::T.untyped)
+end
+
+class Gem::SpecificationPolicy
+end
+
 class Gem::StreamUI
+  def _deprecated_debug(statement); end
+
   def _gets_noecho(); end
 
   def alert(statement, question=T.unsafe(nil)); end
@@ -6137,7 +6250,7 @@ class Gem::StreamUI
 
   def close(); end
 
-  def debug(statement); end
+  def debug(*args, &block); end
 
   def download_reporter(*args); end
 
@@ -6161,6 +6274,7 @@ class Gem::StreamUI
 end
 
 class Gem::StreamUI
+  extend ::Gem::Deprecate
 end
 
 class Gem::StubSpecification
@@ -6230,6 +6344,15 @@ module Gem::Text
   extend ::T::Sig
 end
 
+class Gem::UninstallError
+  def spec(); end
+
+  def spec=(spec); end
+end
+
+class Gem::UninstallError
+end
+
 Gem::UnsatisfiableDepedencyError = Gem::UnsatisfiableDependencyError
 
 class Gem::UnsatisfiableDependencyError
@@ -6267,6 +6390,7 @@ end
 
 module Gem::UserInteraction
   include ::Gem::DefaultUserInteraction
+  include ::Gem::Text
   def alert(statement, question=T.unsafe(nil)); end
 
   def alert_error(statement, question=T.unsafe(nil)); end
@@ -6293,11 +6417,12 @@ module Gem::UserInteraction
 end
 
 module Gem::Util
-  NULL_DEVICE = ::T.let(nil, ::T.untyped)
 end
 
 module Gem::Util
   extend ::T::Sig
+  def self.glob_files_in_dir(glob, base_path); end
+
   def self.gunzip(data); end
 
   def self.gzip(data); end
@@ -6366,7 +6491,13 @@ end
 
 module Gem
   extend ::T::Sig
-  def self._deprecated_datadir(gem_name); end
+  def self._deprecated_detect_gemdeps(path=T.unsafe(nil)); end
+
+  def self._deprecated_gunzip(data); end
+
+  def self._deprecated_gzip(data); end
+
+  def self._deprecated_inflate(data); end
 
   def self.activate_bin_path(name, *args); end
 
@@ -6378,7 +6509,7 @@ module Gem
 
   def self.deflate(data); end
 
-  def self.detect_gemdeps(path=T.unsafe(nil)); end
+  def self.detect_gemdeps(*args, &block); end
 
   def self.dir(); end
 
@@ -6408,15 +6539,15 @@ module Gem
 
   def self.gemdeps(); end
 
-  def self.gunzip(data); end
+  def self.gunzip(*args, &block); end
 
-  def self.gzip(data); end
+  def self.gzip(*args, &block); end
 
   def self.host(); end
 
   def self.host=(host); end
 
-  def self.inflate(data); end
+  def self.inflate(*args, &block); end
 
   def self.install(name, version=T.unsafe(nil), *options); end
 
@@ -6445,6 +6576,8 @@ module Gem
   def self.marshal_version(); end
 
   def self.needs(); end
+
+  def self.operating_system_defaults(); end
 
   def self.path(); end
 
@@ -7609,8 +7742,6 @@ module JSON
 end
 
 module Kernel
-  def class(); end
-
   def gem(dep, *reqs); end
 
   def itself(); end
@@ -7757,7 +7888,35 @@ end
 
 Methods = T::Private::Methods
 
-MiniTest = Minitest
+module Minitest
+end
+
+MiniTest::Expectations = Minitest::Expectations
+
+class Minitest::Spec
+end
+
+module Minitest::Spec::DSL
+end
+
+MiniTest::Spec::DSL::InstanceMethods = Minitest::Spec::DSL::InstanceMethods
+
+module Minitest::Spec::DSL
+end
+
+class Minitest::Spec
+end
+
+class Minitest::Test
+end
+
+MiniTest::Test::LifecycleHooks = Minitest::Test::LifecycleHooks
+
+class Minitest::Test
+end
+
+module Minitest
+end
 
 module Minitest
   ENCS = ::T.let(nil, ::T.untyped)
@@ -7771,6 +7930,10 @@ end
 
 module Minitest::Assertions
   extend ::T::Sig
+end
+
+class Minitest::BacktraceFilter
+  MT_RE = ::T.let(nil, ::T.untyped)
 end
 
 module Minitest::Expectations
@@ -7790,6 +7953,10 @@ module Minitest::Parallel::Test
 end
 
 module Minitest::Parallel
+  extend ::T::Sig
+end
+
+module Minitest::Reportable
   extend ::T::Sig
 end
 
@@ -7990,8 +8157,6 @@ module Net::HTTP::ProxyDelta
   extend ::T::Sig
 end
 
-Net::HTTP::ProxyMod = Net::HTTP::ProxyDelta
-
 class Net::HTTP::Put
   extend ::T::Sig
 end
@@ -8031,13 +8196,17 @@ class Net::HTTPBadResponse
   extend ::T::Sig
 end
 
-Net::HTTPClientError::EXCEPTION_TYPE = Net::HTTPServerException
-
 class Net::HTTPClientError
   extend ::T::Sig
 end
 
-Net::HTTPClientErrorCode = Net::HTTPClientError
+class Net::HTTPClientError
+end
+
+Net::HTTPClientErrorCode::EXCEPTION_TYPE = Net::HTTPServerException
+
+class Net::HTTPClientError
+end
 
 class Net::HTTPConflict
   extend ::T::Sig
@@ -8109,13 +8278,17 @@ class Net::HTTPIMUsed
   extend ::T::Sig
 end
 
-Net::HTTPInformation::EXCEPTION_TYPE = Net::HTTPError
-
 class Net::HTTPInformation
   extend ::T::Sig
 end
 
-Net::HTTPInformationCode = Net::HTTPInformation
+class Net::HTTPInformation
+end
+
+Net::HTTPInformationCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPInformation
+end
 
 class Net::HTTPInsufficientStorage
   extend ::T::Sig
@@ -8237,13 +8410,17 @@ class Net::HTTPProxyAuthenticationRequired
   extend ::T::Sig
 end
 
-Net::HTTPRedirection::EXCEPTION_TYPE = Net::HTTPRetriableError
-
 class Net::HTTPRedirection
   extend ::T::Sig
 end
 
-Net::HTTPRedirectionCode = Net::HTTPRedirection
+class Net::HTTPRedirection
+end
+
+Net::HTTPRedirectionCode::EXCEPTION_TYPE = Net::HTTPRetriableError
+
+class Net::HTTPRedirection
+end
 
 class Net::HTTPRequest
   extend ::T::Sig
@@ -8295,13 +8472,17 @@ class Net::HTTPSeeOther
   extend ::T::Sig
 end
 
-Net::HTTPServerError::EXCEPTION_TYPE = Net::HTTPFatalError
-
 class Net::HTTPServerError
   extend ::T::Sig
 end
 
-Net::HTTPServerErrorCode = Net::HTTPServerError
+class Net::HTTPServerError
+end
+
+Net::HTTPServerErrorCode::EXCEPTION_TYPE = Net::HTTPFatalError
+
+class Net::HTTPServerError
+end
 
 class Net::HTTPServerException
   extend ::T::Sig
@@ -8311,15 +8492,27 @@ class Net::HTTPServiceUnavailable
   extend ::T::Sig
 end
 
-Net::HTTPSession = Net::HTTP
+class Net::HTTP
+end
 
-Net::HTTPSuccess::EXCEPTION_TYPE = Net::HTTPError
+Net::HTTPSession::ProxyDelta = Net::HTTP::ProxyDelta
+
+Net::HTTPSession::ProxyMod = Net::HTTP::ProxyDelta
+
+class Net::HTTP
+end
 
 class Net::HTTPSuccess
   extend ::T::Sig
 end
 
-Net::HTTPSuccessCode = Net::HTTPSuccess
+class Net::HTTPSuccess
+end
+
+Net::HTTPSuccessCode::EXCEPTION_TYPE = Net::HTTPError
+
+class Net::HTTPSuccess
+end
 
 class Net::HTTPSwitchProtocol
   extend ::T::Sig
@@ -8520,7 +8713,7 @@ class ObjectSpace::WeakMap
 
   def []=(_, _1); end
 
-  def each(); end
+  def each(&blk); end
 
   def each_key(); end
 
@@ -8957,15 +9150,20 @@ module OpenSSL::Random
 end
 
 module OpenSSL::SSL
+  OP_ALLOW_NO_DHE_KEX = ::T.let(nil, ::T.untyped)
   OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION = ::T.let(nil, ::T.untyped)
   OP_CRYPTOPRO_TLSEXT_BUG = ::T.let(nil, ::T.untyped)
   OP_LEGACY_SERVER_CONNECT = ::T.let(nil, ::T.untyped)
+  OP_NO_ENCRYPT_THEN_MAC = ::T.let(nil, ::T.untyped)
+  OP_NO_RENEGOTIATION = ::T.let(nil, ::T.untyped)
+  OP_NO_TLSv1_3 = ::T.let(nil, ::T.untyped)
   OP_SAFARI_ECDHE_ECDSA_BUG = ::T.let(nil, ::T.untyped)
   OP_TLSEXT_PADDING = ::T.let(nil, ::T.untyped)
   SSL2_VERSION = ::T.let(nil, ::T.untyped)
   SSL3_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_1_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_2_VERSION = ::T.let(nil, ::T.untyped)
+  TLS1_3_VERSION = ::T.let(nil, ::T.untyped)
   TLS1_VERSION = ::T.let(nil, ::T.untyped)
 end
 
@@ -9982,10 +10180,6 @@ module SimpleCov
 end
 
 class SimpleDelegator
-  RUBYGEMS_ACTIVATION_MONITOR = ::T.let(nil, ::T.untyped)
-end
-
-class SimpleDelegator
   extend ::T::Sig
 end
 
@@ -10931,7 +11125,6 @@ class Tempfile
   def _close(); end
 
   def inspect(); end
-  RUBYGEMS_ACTIVATION_MONITOR = ::T.let(nil, ::T.untyped)
 end
 
 class Tempfile::Remover
@@ -11689,7 +11882,7 @@ class Zlib::GzipReader
   include ::Enumerable
   def bytes(); end
 
-  def each(*_); end
+  def each(*_, &blk); end
 
   def each_byte(); end
 

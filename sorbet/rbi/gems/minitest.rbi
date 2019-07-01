@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/minitest/all/minitest.rbi
 #
-# minitest-5.10.1
+# minitest-5.11.3
 module Minitest
   def self.__run(reporter, options); end
   def self.after_run(&block); end
@@ -52,7 +52,7 @@ module Minitest::Assertions
   def assert_empty(obj, msg = nil); end
   def assert_equal(exp, act, msg = nil); end
   def assert_in_delta(exp, act, delta = nil, msg = nil); end
-  def assert_in_epsilon(a, b, epsilon = nil, msg = nil); end
+  def assert_in_epsilon(exp, act, epsilon = nil, msg = nil); end
   def assert_includes(collection, obj, msg = nil); end
   def assert_instance_of(cls, obj, msg = nil); end
   def assert_kind_of(cls, obj, msg = nil); end
@@ -105,12 +105,7 @@ class Minitest::Unit::TestCase < Minitest::Test
 end
 class Minitest::Test < Minitest::Runnable
   def capture_exceptions; end
-  def error?; end
-  def location; end
-  def marshal_dump; end
-  def marshal_load(ary); end
-  def passed?; end
-  def result_code; end
+  def class_name; end
   def run; end
   def self.i_suck_and_my_tests_are_order_dependent!; end
   def self.io_lock; end
@@ -119,15 +114,11 @@ class Minitest::Test < Minitest::Runnable
   def self.parallelize_me!; end
   def self.runnable_methods; end
   def self.test_order; end
-  def skipped?; end
-  def time; end
-  def time=(arg0); end
-  def time_it; end
-  def to_s; end
   def with_info_handler(&block); end
   extend Minitest::Guard
   include Minitest::Assertions
   include Minitest::Guard
+  include Minitest::Reportable
   include Minitest::Test::LifecycleHooks
 end
 module Minitest::Test::LifecycleHooks
@@ -162,6 +153,27 @@ class Minitest::Runnable
   def self.runnables; end
   def self.with_info_handler(reporter, &block); end
   def skipped?; end
+  def time; end
+  def time=(arg0); end
+  def time_it; end
+end
+module Minitest::Reportable
+  def class_name; end
+  def error?; end
+  def location; end
+  def passed?; end
+  def result_code; end
+  def skipped?; end
+end
+class Minitest::Result < Minitest::Runnable
+  def class_name; end
+  def klass; end
+  def klass=(arg0); end
+  def self.from(runnable); end
+  def source_location; end
+  def source_location=(arg0); end
+  def to_s; end
+  include Minitest::Reportable
 end
 class Minitest::AbstractReporter
   def lock; end
@@ -211,7 +223,8 @@ class Minitest::StatisticsReporter < Minitest::Reporter
   def total_time=(arg0); end
 end
 class Minitest::SummaryReporter < Minitest::StatisticsReporter
-  def aggregated_results; end
+  def aggregated_results(io); end
+  def binary_string; end
   def old_sync; end
   def old_sync=(arg0); end
   def report; end
