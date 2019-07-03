@@ -7,7 +7,7 @@
 #
 #   https://github.com/sorbet/sorbet-typed/new/master?filename=lib/sorbet-runtime/all/sorbet-runtime.rbi
 #
-# sorbet-runtime-0.4.4358
+# sorbet-runtime-0.4.4366
 module T::Configuration
   def self.call_validation_error_handler(signature, opts); end
   def self.call_validation_error_handler=(value); end
@@ -322,6 +322,8 @@ class T::Private::Methods::Declaration < Struct
   def mod=(_); end
   def mode; end
   def mode=(_); end
+  def on_failure; end
+  def on_failure=(_); end
   def override_allow_incompatible; end
   def override_allow_incompatible=(_); end
   def params; end
@@ -332,8 +334,6 @@ class T::Private::Methods::Declaration < Struct
   def self.inspect; end
   def self.members; end
   def self.new(*arg0); end
-  def soft_notify; end
-  def soft_notify=(_); end
   def type_parameters; end
   def type_parameters=(_); end
 end
@@ -347,11 +347,11 @@ class T::Private::Methods::DeclBuilder
   def generated; end
   def implementation; end
   def initialize(mod); end
+  def on_failure(*args); end
   def overridable; end
   def override(allow_incompatible: nil); end
   def params(params); end
   def returns(type); end
-  def soft(notify:); end
   def type_parameters(*names); end
   def void; end
 end
@@ -370,7 +370,7 @@ class T::Private::Methods::Signature
   def generated; end
   def has_keyrest; end
   def has_rest; end
-  def initialize(method:, method_name:, raw_arg_types:, raw_return_type:, bind:, mode:, check_level:, soft_notify:, parameters: nil, generated: nil, override_allow_incompatible: nil); end
+  def initialize(method:, method_name:, raw_arg_types:, raw_return_type:, bind:, mode:, check_level:, on_failure:, parameters: nil, generated: nil, override_allow_incompatible: nil); end
   def keyrest_name; end
   def keyrest_type; end
   def kwarg_names; end
@@ -380,6 +380,7 @@ class T::Private::Methods::Signature
   def method_desc; end
   def method_name; end
   def mode; end
+  def on_failure; end
   def override_allow_incompatible; end
   def owner; end
   def parameters; end
@@ -389,7 +390,6 @@ class T::Private::Methods::Signature
   def rest_type; end
   def return_type; end
   def self.new_untyped(method:, mode: nil, parameters: nil); end
-  def soft_notify; end
 end
 module T::Utils::Nilable
   def self.get_type_info(prop_type); end
