@@ -212,13 +212,10 @@
 # wrong constant name initialize$1
 # wrong constant name power$2
 # wrong constant name to_s$1
-# wrong constant name _load
-# wrong constant name double_fig
-# wrong constant name limit
-# wrong constant name mode
-# wrong constant name save_exception_mode
-# wrong constant name save_limit
-# wrong constant name save_rounding_mode
+# undefined singleton method `limit$1' for `BigDecimal'
+# undefined singleton method `mode$1' for `BigDecimal'
+# wrong constant name limit$1
+# wrong constant name mode$1
 # wrong constant name ver
 # wrong constant name clone
 # wrong constant name irb
