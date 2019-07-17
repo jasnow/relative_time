@@ -444,6 +444,10 @@ end
 class Bundler::Graph
 end
 
+class Bundler::Index
+  include ::Enumerable
+end
+
 class Bundler::Injector
   def initialize(deps, options=T.unsafe(nil)); end
 
@@ -497,6 +501,14 @@ end
 
 module Bundler::Molinillo::Delegates
   extend ::T::Sig
+end
+
+class Bundler::Molinillo::DependencyGraph
+  include ::Enumerable
+end
+
+class Bundler::Molinillo::DependencyGraph::Log
+  extend ::Enumerable
 end
 
 module Bundler::Molinillo::SpecificationProvider
@@ -792,6 +804,10 @@ end
 
 module Bundler::SharedHelpers
   extend ::T::Sig
+end
+
+class Bundler::SpecSet
+  include ::Enumerable
 end
 
 class Bundler::UI::RGProxy
