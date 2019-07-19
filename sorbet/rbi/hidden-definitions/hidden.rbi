@@ -9627,8 +9627,6 @@ end
 class Proc
   def ===(*_); end
 
-  def [](*_); end
-
   def clone(); end
 
   def lambda?(); end
